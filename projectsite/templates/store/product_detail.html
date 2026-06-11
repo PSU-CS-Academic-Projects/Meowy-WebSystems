@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} | Meowy Cat Food Store{% endblock %}
+
+{% block content %}
+<!-- Single Page Hero Header Start -->
+<div class="container-fluid bg-breadcrumb text-center py-5 mb-5" style="background: linear-gradient(rgba(27, 27, 27, 0.8), rgba(27, 27, 27, 0.8)), url('https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1200&q=80') center center no-repeat; background-size: cover;">
+    <div class="container py-4">
+        <h1 class="text-white display-4 mb-3">{{ product.name }}</h1>
+        <p class="text-light mb-0">{{ product.brand }}</p>
+    </div>
+</div>
+<!-- Single Page Hero Header End -->
+
+<!-- Product Detail Start -->
+<div class="container py-3 mb-5">
+    <div class="row g-5">
+        <!-- Product Image -->
+        <div class="col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="bg-light p-4 rounded shadow-sm d-flex align-items-center justify-content-center" style="height: 450px;">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}" style="max-height: 400px; object-fit: contain;">
+                {% else %}
+                    <i class="fas fa-cat fa-10x text-muted"></i>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Product Info -->
+        <div class="col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+            <div class="ps-md-3">
+                <span class="text-primary fw-bold text-uppercase" style="font-size: 14px; letter-spacing: 1px;">{{ product.brand }}</span>
+                <h2 class="fw-bold text-dark mt-1 mb-3">{{ product.name }}</h2>
+                
+                {% if variants %}
+                <h4 class="mb-4">Price: <span class="text-primary fw-bold">₱<span id="display-price">0.00</span></span></h4>
+                {% endif %}
+                
+                <hr>
+                
+                <p class="text-muted fs-5 my-4" style="line-height: 1.7;">{{ product.description }}</p>
+                
+                <hr>
+                
+                <!-- Purchase form -->
+                <form action="{% url 'cart:cart_add' %}" method="post" class="mt-4">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-bold">Select Flavor & Weight:</label>
+                        {% if variants %}
+                            <select name="variant_id" id="variant-select" class="form-select py-2 border-2" style="border-radius: 8px;">
+                                {% for variant in variants %}
+                                    <option value="{{ variant.id }}" data-price="{{ variant.price|floatformat:2 }}" data-stock="{{ variant.stock }}">
+                                        {{ variant.flavor }} - {{ variant.weight }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <div class="alert alert-warning">No options/variants currently available for this product. Check back soon!</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <span class="text-dark fw-bold me-2">Availability:</span>
+                        <span id="display-stock-status">
+                            <span id="display-stock" class="fw-bold">0</span> items left
+                        </span>
+                    </div>
+                    
+                    {% if variants %}
+                    <div class="row g-3 align-items-center mb-4">
+                        <div class="col-auto">
+                            <label for="qty-input" class="form-label mb-0 text-dark fw-bold">Quantity:</label>
+                        </div>
+                        <div class="col-auto" style="width: 100px;">
+                            <input type="number" name="quantity" id="qty-input" value="1" min="1" class="form-control text-center py-2" style="border-radius: 8px;">
+                        </div>
+                        <div class="col-auto flex-grow-1">
+                            <button type="submit" id="add-to-cart-btn" class="btn btn-primary rounded-pill py-2 px-4 w-100 text-white fw-bold">
+                                <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                </form>
+                
+                <!-- Safety Warning / Support info -->
+                <div class="bg-light p-3 rounded mt-4 d-flex align-items-center border">
+                    <i class="fas fa-truck text-primary fs-3 me-3"></i>
+                    <div>
+                        <h6 class="fw-bold mb-0 text-dark">Fast Dispatch & Delivery</h6>
+                        <small class="text-muted">Orders processed within 24 hours. Freshness guaranteed!</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const select = document.getElementById('variant-select');
+        const priceSpan = document.getElementById('display-price');
+        const stockSpan = document.getElementById('display-stock');
+        const qtyInput = document.getElementById('qty-input');
+        const addToCartBtn = document.getElementById('add-to-cart-btn');
+        const stockStatusSpan = document.getElementById('display-stock-status');
+
+        if (select) {
+            function updateDisplay() {
+                const selectedOption = select.options[select.selectedIndex];
+                if (selectedOption) {
+                    const price = selectedOption.getAttribute('data-price');
+                    const stock = parseInt(selectedOption.getAttribute('data-stock'), 10);
+                    
+                    priceSpan.textContent = price;
+                    
+                    if (stock <= 0) {
+                        stockStatusSpan.innerHTML = '<span class="text-danger fw-bold"><i class="fas fa-times-circle me-1"></i>Out of Stock</span>';
+                        if (qtyInput) qtyInput.disabled = true;
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = true;
+                            addToCartBtn.innerHTML = '<i class="fas fa-times-circle me-2"></i>Out of Stock';
+                            addToCartBtn.className = "btn btn-secondary rounded-pill py-2 px-4 w-100 fw-bold";
+                        }
+                    } else {
+                        stockStatusSpan.innerHTML = `<span class="text-success fw-bold"><i class="fas fa-check-circle me-1"></i>In Stock</span> (${stock} left)`;
+                        if (qtyInput) {
+                            qtyInput.disabled = false;
+                            qtyInput.max = stock;
+                            if (parseInt(qtyInput.value, 10) > stock) {
+                                qtyInput.value = stock;
+                            }
+                        }
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = false;
+                            addToCartBtn.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>Add to Cart';
+                            addToCartBtn.className = "btn btn-primary rounded-pill py-2 px-4 w-100 text-white fw-bold";
+                        }
+                    }
+                }
+            }
+
+            select.addEventListener('change', updateDisplay);
+            updateDisplay(); // Run once at start
+            
+            if (qtyInput) {
+                qtyInput.addEventListener('change', function() {
+                    const max = parseInt(qtyInput.max, 10);
+                    const val = parseInt(qtyInput.value, 10);
+                    if (val > max) {
+                        qtyInput.value = max;
+                    }
+                    if (val < 1) {
+                        qtyInput.value = 1;
+                    }
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Products | Meowy Cat Food Store{% endblock %}
+
+{% block content %}
+<!-- Single Page Hero Header Start -->
+<div class="container-fluid bg-breadcrumb text-center py-5 mb-5" style="background: linear-gradient(rgba(27, 27, 27, 0.8), rgba(27, 27, 27, 0.8)), url('https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=1200&q=80') center center no-repeat; background-size: cover;">
+    <div class="container py-4">
+        <h1 class="text-white display-4 mb-3">Our Product Catalog</h1>
+        <p class="text-light mb-0">{% if category %}Browse our specialized selection of {{ category.name }}{% else %}Explore our range of dry, wet, and specialized cat foods{% endif %}</p>
+    </div>
+</div>
+<!-- Single Page Hero Header End -->
+
+<!-- Products Grid Start -->
+<div class="container py-3 mb-5">
+    <div class="row g-4">
+        <!-- Sidebar Filter Start -->
+        <div class="col-lg-3">
+            <div class="bg-light p-4 rounded shadow-sm mb-4">
+                <h4 class="fw-bold mb-3 text-dark">Categories</h4>
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'store:product_list' %}" class="list-group-item list-group-item-action bg-transparent ps-0 border-bottom {% if not category %}active text-primary fw-bold{% else %}text-muted{% endif %}">
+                        All Categories
+                    </a>
+                    {% for cat in categories %}
+                    <a href="{{ cat.get_absolute_url }}" class="list-group-item list-group-item-action bg-transparent ps-0 border-bottom {% if category.id == cat.id %}active text-primary fw-bold{% else %}text-muted{% endif %}">
+                        {{ cat.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="bg-light p-4 rounded shadow-sm">
+                <h4 class="fw-bold mb-3 text-dark">Search</h4>
+                <form action="." method="get">
+                    {% if sort %}
+                        <input type="hidden" name="sort" value="{{ sort }}">
+                    {% endif %}
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control" placeholder="Search product..." value="{{ query|default:'' }}">
+                        <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Sidebar Filter End -->
+        
+        <!-- Main Products Grid Start -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap bg-light p-3 rounded shadow-sm">
+                <div class="text-muted">
+                    Showing <span class="text-dark fw-bold">{{ products|length }}</span> product(s)
+                    {% if query %}for "{{ query }}"{% endif %}
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <span class="text-muted me-2" style="white-space: nowrap;">Sort By:</span>
+                    <form action="." method="get" id="sort-form">
+                        {% if query %}
+                            <input type="hidden" name="q" value="{{ query }}">
+                        {% endif %}
+                        <select name="sort" class="form-select border-0 bg-transparent text-primary fw-bold" onchange="document.getElementById('sort-form').submit();">
+                            <option value="">Default sorting</option>
+                            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name: A to Z</option>
+                            <option value="name_desc" {% if sort == 'name_desc' %}selected{% endif %}>Name: Z to A</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                {% if products %}
+                    {% for prod in products %}
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="card border-0 shadow-sm h-100 product-card" style="border-radius: 12px; overflow: hidden; transition: transform 0.3s, box-shadow 0.3s;">
+                            {% if prod.image %}
+                                <img src="{{ prod.image.url }}" class="card-img-top" alt="{{ prod.name }}" style="height: 200px; object-fit: contain; background-color: #fff; padding: 15px;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                    <i class="fas fa-cat fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body p-3 d-flex flex-column">
+                                <span class="text-primary fw-bold text-uppercase" style="font-size: 11px;">{{ prod.brand }}</span>
+                                <h6 class="card-title fw-bold text-dark mt-1" style="height: 40px; overflow: hidden;">{{ prod.name }}</h6>
+                                <p class="card-text text-muted flex-grow-1" style="font-size: 13px; height: 55px; overflow: hidden;">{{ prod.description }}</p>
+                                
+                                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                    <div>
+                                        {% if prod.min_price %}
+                                            <small class="text-muted d-block" style="font-size: 10px;">Starting from</small>
+                                            <span class="fs-6 fw-bold text-primary">₱{{ prod.min_price|floatformat:2 }}</span>
+                                        {% else %}
+                                            <span class="text-danger fw-bold" style="font-size: 12px;">Out of Stock</span>
+                                        {% endif %}
+                                    </div>
+                                    <a href="{{ prod.get_absolute_url }}" class="btn btn-dark rounded-pill py-2 px-3 btn-sm">Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                        <h4 class="fw-bold">No products found</h4>
+                        <p class="text-muted">Try searching with other keywords or choosing a different category.</p>
+                        <a href="{% url 'store:product_list' %}" class="btn btn-primary rounded-pill py-2 px-4 mt-2">Clear filters</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <!-- Main Products Grid End -->
+    </div>
+</div>
+
+<style>
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.15)!important;
+    }
+</style>
+{% endblock %}

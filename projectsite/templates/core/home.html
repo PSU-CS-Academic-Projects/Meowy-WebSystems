@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home | Meowy Cat Food Store{% endblock %}
+
+{% block content %}
+<!-- Carousel Start -->
+<div class="header-carousel owl-carousel mb-5">
+    <div class="header-carousel-item bg-dark position-relative" style="height: 500px; overflow: hidden;">
+        <div class="carousel-caption d-flex align-items-center h-100 w-100" style="background: rgba(27,27,27,0.75);">
+            <div class="container text-start py-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-7">
+                        <h4 class="text-primary text-uppercase fw-bold mb-3">Welcome to Meowy 🐱</h4>
+                        <h1 class="display-4 text-white mb-4">Premium Cat Food for Happy, Healthy Felines</h1>
+                        <p class="mb-4 text-light fs-5">We provide only the finest ingredients tailored to your cat's age, taste preference, and dietary needs. Explore dry, wet, and specialized formula foods.</p>
+                        <a href="{% url 'store:product_list' %}" class="btn btn-primary rounded-pill py-3 px-5 text-white">Shop Now <i class="fa fa-chevron-right ms-2"></i></a>
+                    </div>
+                    <div class="col-lg-5 text-center d-none d-lg-block">
+                        <i class="fas fa-cat fa-10x text-primary animate__animated animate__bounceIn" style="opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-carousel-item bg-dark position-relative" style="height: 500px; overflow: hidden;">
+        <div class="carousel-caption d-flex align-items-center h-100 w-100" style="background: rgba(27,27,27,0.75);">
+            <div class="container text-start py-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-7">
+                        <h4 class="text-primary text-uppercase fw-bold mb-3">Specialized Formulas</h4>
+                        <h1 class="display-4 text-white mb-4">Nutritionists Approved Cat Diets</h1>
+                        <p class="mb-4 text-light fs-5">Formulated for sensitive stomachs, hairball control, weight management, and kidney support. Give your furry friend the care they deserve.</p>
+                        <a href="{% url 'store:product_list' %}" class="btn btn-primary rounded-pill py-3 px-5 text-white">Browse Specialties <i class="fa fa-chevron-right ms-2"></i></a>
+                    </div>
+                    <div class="col-lg-5 text-center d-none d-lg-block">
+                        <i class="fas fa-hand-holding-heart fa-10x text-primary animate__animated animate__bounceIn" style="opacity: 0.8;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Carousel End -->
+
+<!-- Categories Section -->
+<div class="container-fluid py-5">
+    <div class="container py-3">
+        <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
+            <h4 class="text-primary text-uppercase fw-bold">Categories</h4>
+            <h2 class="display-6 mb-3">Formulated For Every Feline</h2>
+            <p class="text-muted">Explore our high-quality range of products categorized to help you find exactly what your cat needs.</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {% if categories %}
+                {% for cat in categories %}
+                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
+                    <div class="card border-0 text-center shadow-sm h-100 p-4" style="border-radius: 15px; background: #f8f9fa; transition: transform 0.3s;">
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <i class="fas fa-box-open fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title fw-bold text-dark">{{ cat.name }}</h5>
+                            <p class="text-muted card-text">Premium cat food selections.</p>
+                            <a href="{{ cat.get_absolute_url }}" class="btn btn-dark rounded-pill py-2 px-4 mt-3">View Products</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">No categories available. Please log in to admin and add categories!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Featured Products Section -->
+<div class="container-fluid py-5" style="background-color: #fcfcfc;">
+    <div class="container py-3">
+        <div class="text-center mx-auto pb-5 wow fadeInUp" data-wow-delay="0.2s" style="max-width: 800px;">
+            <h4 class="text-primary text-uppercase fw-bold">Featured Catalog</h4>
+            <h2 class="display-6 mb-3">Our Bestsellers</h2>
+            <p class="text-muted">Hand-picked premium meals that cats around the world absolutely adore.</p>
+        </div>
+        <div class="row g-4">
+            {% if featured_products %}
+                {% for prod in featured_products %}
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 15px; overflow: hidden; transition: 0.3s;">
+                        {% if prod.image %}
+                            <img src="{{ prod.image.url }}" class="card-img-top" alt="{{ prod.name }}" style="height: 250px; object-fit: contain; background-color: #fff; padding: 15px;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                                <i class="fas fa-cat fa-4x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body p-4 d-flex flex-column">
+                            <span class="text-primary fw-bold text-uppercase" style="font-size: 12px;">{{ prod.brand }}</span>
+                            <h5 class="card-title fw-bold text-dark mt-1">{{ prod.name }}</h5>
+                            <p class="card-text text-muted flex-grow-1" style="font-size: 14px;">{{ prod.description|truncatewords:15 }}</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                <div>
+                                    {% if prod.min_price %}
+                                        <small class="text-muted d-block">Starting from</small>
+                                        <span class="fs-5 fw-bold text-primary">₱{{ prod.min_price|floatformat:2 }}</span>
+                                    {% else %}
+                                        <span class="text-danger fw-bold" style="font-size: 14px;">Out of Stock</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{{ prod.get_absolute_url }}" class="btn btn-dark rounded-pill py-2 px-4">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p class="text-muted">No featured products available. Please log in to admin to add products with variants!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Features Callout Start -->
+<div class="container-fluid py-5">
+    <div class="container py-3">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.2s">
+                <h4 class="text-primary text-uppercase fw-bold">Why Choose Us</h4>
+                <h2 class="display-6 mb-4">We Specialize in Quality Nutrition</h2>
+                <p class="mb-4 text-muted">At Meowy Cat Food Store, we understand that cats are family. That's why we carry only veterinarians-recommended brands. Every meal is packed with essential amino acids, proteins, and minerals for long-term health.</p>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <h5 class="fw-bold"><i class="fa fa-check text-primary me-2"></i> 100% Organic Recipes</h5>
+                    </div>
+                    <div class="col-sm-6">
+                        <h5 class="fw-bold"><i class="fa fa-check text-primary me-2"></i> Rich in Taurine & Omega 3</h5>
+                    </div>
+                    <div class="col-sm-6">
+                        <h5 class="fw-bold"><i class="fa fa-check text-primary me-2"></i> Vet Recommended</h5>
+                    </div>
+                    <div class="col-sm-6">
+                        <h5 class="fw-bold"><i class="fa fa-check text-primary me-2"></i> Grain-Free Selections</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center wow fadeInUp" data-wow-delay="0.4s">
+                <i class="fas fa-shield-cat fa-10x text-primary animate__animated animate__pulse animate__infinite" style="font-size: 200px;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Features Callout End -->
+{% endblock %}
