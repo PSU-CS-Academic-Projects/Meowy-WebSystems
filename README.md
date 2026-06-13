@@ -146,7 +146,7 @@ Environment variables (such as `DEBUG` and `SECRET_KEY`) are dynamically loaded 
 - [ ] **Order Tracking Dashboard:** Live order status check (Processing, Shipped, Delivered) for customers.
 
 ### 👥 Contributors
-Castillo, Kenneth Vincent B. - Developer & Designer
+Castillo, Kenneth Vincent B. - Developer & Designer   
 Malate, Juan Miguel M. -  Developer & Designer
 
 ### 📄 License
