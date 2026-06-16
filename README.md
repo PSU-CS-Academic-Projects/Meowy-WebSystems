@@ -38,7 +38,7 @@
 
 ---
 
-## 📸 UI/UX Screenshots
+### Screenshots
 
 *Placeholders for interface screenshots. Replace the image links with your own captures:*
 
