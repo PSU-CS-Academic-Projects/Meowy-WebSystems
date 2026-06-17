@@ -7,7 +7,8 @@
 [![Project Nature](https://img.shields.io/badge/project-private%20academic-red.svg)](#)
 
 > **Live Deployment:** [https://meowystore.pythonanywhere.com](https://meowystore.pythonanywhere.com)
-
+>
+> **Video Demonstration:** [Meowy - Video Demonstration](https://drive.google.com/file/d/1HRwdY83jJ7cvGHw1VYXkNhWeHhdmUKPx/view?usp=drive_link)
 ---
 
 ## 🐾 Project Overview
